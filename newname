@@ -1,0 +1,22 @@
+#Changes file name if it exists. (OldFfileNname NewFileName)
+if [[ ! $# -eq 2 ]]; then
+   echo "Invalid number of arguments"
+fi
+#Checks if file exists
+if [ ! -e $1 ]
+then 
+echo $1 file does not exist
+exit 1
+fi 
+#Assigns number to new file 
+name=$2
+if [[ -e $name ]] ; then
+    i=1
+    while [[ -e $name-$i ]] ; do
+        let i++
+    done
+name=$name-$i
+mv $1 $name
+else 
+mv $1 $2
+fi
