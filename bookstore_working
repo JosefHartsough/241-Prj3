@@ -1,0 +1,96 @@
+
+if [ ! $# -eq 1 ]
+then
+    echo This program takes 1 command line argument
+    echo is should be a list of book information
+fi
+
+
+if [ ! -r $1 ]
+then
+    echo This program could not read the file $1
+fi
+
+
+#This lets the menu loop over and over after command has been passed by the user 
+while true
+do
+echo Please Choose An Option
+echo -------------------------------------------------------------------
+echo "(1) Search the booklist for entries by author"	
+echo "(2) Add a new entry to the booklist"				
+echo "(3) Delete an entry from the booklist (using title as the key) "
+echo "(4) Display all entries and the number of entries in the booklist"
+echo "(5) Exit"								
+echo ------------------------------------------------------------------
+
+
+
+#Search booklist for entries by "author"
+read option
+case $option in
+1)echo Please enter your search by author:
+read search
+search=$(echo $search)
+OIFS=$IFS
+IFS=':'
+while read line line2 line3 || [ -n "$line" ];
+do 
+result=$(echo $line)
+if [[ "$result" == *"$search"* ]]
+then
+echo -e $line '\t\t' $line2 '\t\t' $line3
+fi
+done < $1
+OIFS=IFS
+;;
+
+
+
+#Adds new entry to the booklist
+#works, but does not recognize if the line being added is already there
+2)echo What is the name of the author? 
+read author
+echo What is the title of the book?
+read title
+echo What is the book year? 
+read year
+entry=$author:$title:$year
+echo $entry >>$1
+;;
+
+
+#Deletes an entry from the booklist (using title as the key)
+#Works, but doesnt properly recognize when the line is not there
+#FIX THIS!!!!!!!!!!!!
+
+3)echo What is the title of the book you would like to delete? 
+if [ -n "$title" ]
+then 
+echo This title was not found in the booklist
+fi
+read title
+sed -i "/$title/d" $1
+;;
+
+#Works correctly, but formating needs to be fixed
+#Displays all entries and the number of entries in the booklist 
+4)IFS=':'
+while read -r line1 line2 line3
+do 
+echo -e $line1'\t\t'  $line2'\t\t'  $line3
+done < $1
+display="$(wc -l < $1)"
+echo There are $display entries in the booklist
+;;
+
+
+#Exits the script 
+5)exit 0
+;;
+
+
+esac
+done
+
+
